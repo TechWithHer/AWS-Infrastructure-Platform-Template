@@ -6,16 +6,25 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "~> 3.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
 
-  # Local backend, isolated per environment. Swap for s3/gcs/azurerm or an
-  # HCP Terraform `cloud {}` block in a real team setup (see README).
-  backend "local" {
-    path = "terraform.tfstate"
+  backend "s3" {
+    bucket         = "ayushi-terraform-state-2026"
+    key            = "dev/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
   }
 }
 
 provider "docker" {}
+provider "aws" {
+  region = "ap-south-1"
+}
 
 module "web" {
   source = "../../modules/web_service"

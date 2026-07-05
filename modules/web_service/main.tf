@@ -2,7 +2,7 @@ locals {
   # merge() + map manipulation -> a common label set for every container
   common_labels = merge(
     {
-      "managed-by"  = "terraform"
+      "managed-by"  = "TechWithHer - terraform"
       "service"     = var.service_name
       "environment" = var.environment
     },

@@ -32,6 +32,12 @@ variable "instances" {
   }))
   description = "Map of instance name => settings. One container is created per entry."
 
+default = {
+    web_default = {
+      host_port = 8081
+    }
+  }
+
   validation {
     condition = alltrue([
       for inst in var.instances : inst.host_port >= 1024 && inst.host_port <= 65535
