@@ -13,10 +13,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "ayushi-terraform-state-2026"
+    bucket         = "techwithher-2026-s3"
     key            = "dev/terraform.tfstate"
     region         = "ap-south-1"
-    dynamodb_table = "terraform-locks"
+    dynamodb_table = "techwithher-locktable"
     encrypt        = true
   }
 }
@@ -24,6 +24,21 @@ terraform {
 provider "docker" {}
 provider "aws" {
   region = "ap-south-1"
+}
+module "networking" {
+
+  source = "../../modules/networking"
+
+  project_name = "multi-env-platform"
+  environment  = "dev"
+
+  vpc_cidr = "10.0.0.0/16"
+
+  public_subnet_1_cidr = "10.0.1.0/24"
+  public_subnet_2_cidr = "10.0.2.0/24"
+
+  availability_zone_1 = "ap-southeast-1a"
+  availability_zone_2 = "ap-southeast-1b"
 }
 
 module "web" {
