@@ -6,7 +6,7 @@ Resources:
   TerraformStateBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: techwithher-2026-s3
+      BucketName: techwithher-project-2-statelock
 
       VersioningConfiguration:
         Status: Enabled
@@ -19,7 +19,7 @@ Resources:
   TerraformLockTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: techwithher-locktable
+      TableName: techwithher-project-2-locktable
 
       BillingMode: PAY_PER_REQUEST
 
