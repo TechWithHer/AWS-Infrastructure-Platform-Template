@@ -35,7 +35,3 @@ module "networking" {
   availability_zone_1 = "ap-southeast-1a"
   availability_zone_2 = "ap-southeast-1b"
 }
-
-output "vpc_id" {
-  value = module.networking.vpc_id
-}
