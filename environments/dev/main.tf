@@ -2,10 +2,6 @@ terraform {
   required_version = ">= 1.5.0"
 
   required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 3.0"
-    }
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
@@ -13,23 +9,22 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "techwithher-2026-s3"
+    bucket         = "techwithher-project-2-statelock"
     key            = "dev/terraform.tfstate"
-    region         = "ap-south-1"
-    dynamodb_table = "techwithher-locktable"
+    region         = "ap-southeast-1"
+    dynamodb_table = "techwithher-project-2-locktable"
     encrypt        = true
   }
 }
 
-provider "docker" {}
 provider "aws" {
-  region = "ap-south-1"
+  region = "ap-southeast-1"
 }
-module "networking" {
 
+module "networking" {
   source = "../../modules/networking"
 
-  project_name = "multi-env-platform"
+  project_name = "aws-multi-env-platform"
   environment  = "dev"
 
   vpc_cidr = "10.0.0.0/16"
@@ -41,14 +36,6 @@ module "networking" {
   availability_zone_2 = "ap-southeast-1b"
 }
 
-module "web" {
-  source = "../../modules/web_service"
-
-  service_name = var.service_name
-  environment  = "dev"
-  instances    = var.instances
-
-  extra_labels = {
-    cost-center = "engineering"
-  }
+output "vpc_id" {
+  value = module.networking.vpc_id
 }
