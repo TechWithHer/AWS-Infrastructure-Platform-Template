@@ -1,3 +1,28 @@
+Project Overview
+Business Problem
+Solution Architecture
+Project Objectives
+Architecture Diagram
+Repository Structure
+Technology Stack
+Infrastructure Components
+Backend Bootstrap
+Networking
+Compute
+Monitoring
+Operations Automation (Lambda)
+CI/CD Pipeline
+Security & Governance
+Deployment Workflow
+Testing & Validation
+Screenshots
+Key Learnings
+Future Enhancements
+License
+
+
+
+
 ## Version 1: Building basic blocks
 
 Creating the Project Structure.
