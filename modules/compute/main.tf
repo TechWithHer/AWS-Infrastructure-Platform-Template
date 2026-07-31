@@ -1,3 +1,12 @@
+locals {
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
+}
+
+
 data "aws_iam_policy_document" "ec2_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -55,9 +64,9 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "${var.project_name}-${var.environment}-sg"
-  }
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-${var.environment}-ec2-sg"
+  })
 }
 data "aws_ami" "amazon_linux" {
 
@@ -92,10 +101,8 @@ resource "aws_instance" "this" {
   associate_public_ip_address = true
   user_data = file("${path.module}/user-data.sh")
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-ec2"
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = var.project_name
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-${var.environment}-ec2-instance"
+  })
   }
-}
+

@@ -1,3 +1,11 @@
+locals {
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
+}
+
 resource "aws_vpc" "this" {
 
   cidr_block = var.vpc_cidr
@@ -5,12 +13,9 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-vpc"
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = var.project_name
-  }
+  tags = merge(local.common_tags, {
+  Name = "${var.project_name}-${var.environment}-vpc"
+})
 }
 # Create public subnet 1
 
@@ -24,12 +29,9 @@ resource "aws_subnet" "public_1" {
 
   map_public_ip_on_launch = true
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-public-subnet-1"
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = var.project_name
-  }
+  tags = merge(local.common_tags, {
+  Name = "${var.project_name}-${var.environment}-vpc"
+})
 }
 
 # Create public subnet 2
@@ -44,12 +46,9 @@ resource "aws_subnet" "public_2" {
 
   map_public_ip_on_launch = true
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-public-subnet-2"
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = var.project_name
-  }
+  tags = merge(local.common_tags, {
+  Name = "${var.project_name}-${var.environment}-vpc"
+})
 }
 
 # Create an Internet Gateway
@@ -58,12 +57,9 @@ resource "aws_internet_gateway" "this" {
 
   vpc_id = aws_vpc.this.id
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-igw"
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = var.project_name
-  }
+  tags = merge(local.common_tags, {
+  Name = "${var.project_name}-${var.environment}-vpc"
+})
 }
 
 # Create a public route table
@@ -72,12 +68,9 @@ resource "aws_route_table" "public" {
 
   vpc_id = aws_vpc.this.id
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-public-rt"
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = var.project_name
-  }
+  tags = merge(local.common_tags, {
+  Name = "${var.project_name}-${var.environment}-vpc"
+})
 }
 
 # Add Internet Route

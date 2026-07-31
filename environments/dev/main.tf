@@ -47,8 +47,30 @@ module "compute" {
 
   vpc_id = module.networking.vpc_id
 
-  subnet_id = module.networking.public_subnet_1_id
-
+  subnet_id     = module.networking.public_subnet_ids[0]
   instance_type = "t3.micro"
 }
 
+module "monitoring" {
+
+  source = "../../modules/monitoring"
+
+  project_name = "aws-multi-env-platform"
+
+  environment = "dev"
+
+  instance_id = module.compute.instance_id
+
+  alarm_email = "teamayushisingh@gmail.com"
+}
+
+module "operations_lambda" {
+
+  source = "../../modules/lambda"
+
+  project_name = "aws-multi-env-platform"
+
+  environment = "dev"
+
+  aws_region = "ap-southeast-1"
+}

@@ -130,13 +130,19 @@ Creates:
 * SNS Topics
 * Alert Subscriptions
 
-#### Lambda Module
+#### Lambda Module 
 
-Creates:
+I built an Operations Automation module that performs infrastructure health reporting, scheduled audits, governance validation, cost optimization checks, and event-driven operational workflows. The module is extensible through EventBridge and SNS, allowing the platform to automate routine operational tasks instead of relying on manual intervention.
 
-* Lambda Functions
-* Execution Roles
-* Event Permissions
+Operations Automation Engine:
+
+* Infrastructure health reporting
+* Event-driven automation
+* Scheduled operational tasks
+* Governance and tag compliance audits
+* Cost optimization checks
+* Security posture validation
+* Automated notifications and remediation
 
 ---
 
