@@ -21,7 +21,47 @@ Future Enhancements
 License
 
 
-
+                  Developer
+                      │
+                      ▼
+              Clone Platform Repo
+                      │
+                      ▼
+          Select Environment (dev/stage/prod)
+                      │
+                      ▼
+         Configure Variables (.tfvars)
+                      │
+                      ▼
+               Git Push / Pull Request
+                      │
+                      ▼
+           GitHub Actions CI Pipeline
+      ┌──────────┬──────────┬──────────┐
+      ▼          ▼          ▼
+ terraform fmt  validate   security scans
+                              │
+                              ▼
+                      terraform plan
+                              │
+                 (Review / Approval)
+                              ▼
+                     terraform apply
+                              │
+                              ▼
+                  Terraform provisions AWS
+      ┌──────────────┬──────────────┬──────────────┐
+      ▼              ▼              ▼
+     VPC           EC2/IAM     Monitoring
+                                      │
+                                      ▼
+                          CloudWatch + SNS
+                                      │
+                                      ▼
+                         Operations Lambda
+                                      │
+                                      ▼
+                    Health Checks / Audits / Reports
 
 ## Version 1: Building basic blocks
 
