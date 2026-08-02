@@ -1,47 +1,39 @@
 import json
 import os
-import boto3
-from datetime import datetime
 
-ec2 = boto3.client("ec2")
+from inventory import get_inventory
+from monitoring import get_monitoring
+from governance import get_governance
+from cost import get_cost
+from report import build_report
+from emailer import send_report
+
 
 def lambda_handler(event, context):
 
-    response = ec2.describe_instances(
-        Filters=[
-            {
-                "Name": "tag:Project",
-                "Values": [os.environ["PROJECT_NAME"]]
-            },
-            {
-                "Name": "tag:Environment",
-                "Values": [os.environ["ENVIRONMENT"]]
-            }
-        ]
+    project = os.environ["PROJECT_NAME"]
+    environment = os.environ["ENVIRONMENT"]
+
+    inventory = get_inventory(project, environment)
+
+    monitoring = get_monitoring()
+
+    governance = get_governance()
+
+    cost = get_cost()
+
+    report = build_report(
+        project,
+        environment,
+        inventory,
+        monitoring,
+        governance,
+        cost
     )
 
-    running = 0
-    stopped = 0
+    send_report(report)
 
-    for reservation in response["Reservations"]:
-        for instance in reservation["Instances"]:
-            state = instance["State"]["Name"]
-
-            if state == "running":
-                running += 1
-            else:
-                stopped += 1
-
-    report = {
-        "project": os.environ["PROJECT_NAME"],
-        "environment": os.environ["ENVIRONMENT"],
-        "region": os.environ["AWS_REGION"],
-        "time": datetime.utcnow().isoformat(),
-        "running_instances": running,
-        "stopped_instances": stopped,
-        "status": "Healthy"
+    return {
+        "statusCode": 200,
+        "body": json.dumps(report)
     }
-
-    print(json.dumps(report, indent=2))
-
-    return report

@@ -23,9 +23,6 @@ resource "aws_lambda_function" "operations" {
       PROJECT_NAME = var.project_name
 
       ENVIRONMENT = var.environment
-
-      AWS_REGION = var.aws_region
-
     }
 
   }

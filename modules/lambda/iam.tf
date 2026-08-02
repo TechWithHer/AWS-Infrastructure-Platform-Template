@@ -62,3 +62,22 @@ resource "aws_iam_role_policy_attachment" "ec2_read" {
 
   policy_arn = aws_iam_policy.ec2_read.arn
 }
+
+data "aws_iam_policy_document" "cloudwatch_read" {
+  statement {
+    actions = [
+      "cloudwatch:DescribeAlarms"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "cloudwatch_read" {
+  name   = "${var.project_name}-${var.environment}-cloudwatch-read"
+  policy = data.aws_iam_policy_document.cloudwatch_read.json
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_read" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.cloudwatch_read.arn
+}
