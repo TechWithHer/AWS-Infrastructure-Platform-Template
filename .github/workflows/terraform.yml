@@ -53,11 +53,6 @@ jobs:
           name: terraform-plan
           path: environments/dev/tfplan
 
-      - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1.0.3
-        with:
-          working_directory: environments/dev
-
       - name: Run Trivy Misconfiguration Scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
