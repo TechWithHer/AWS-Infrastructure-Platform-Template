@@ -1,401 +1,325 @@
 # AWS Multi-Environment Infrastructure Platform
 
-![Terraform](https://img.shields.io/badge/Terraform-v1.5+-623CE4?style=for-the-badge&logo=terraform&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-Provider-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-v1.5+-623CE4?style=for-the-badge\&logo=terraform\&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange?style=for-the-badge\&logo=amazonaws\&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-2088FF?style=for-the-badge\&logo=githubactions\&logoColor=white)
+![Python](https://img.shields.io/badge/Python-Automation-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
 
-A production-level Infrastructure as Code (IaC) project(70% Replica of a client's project) demonstrating how to provision and manage standardized AWS environments using Terraform modules, CloudFormation bootstrapping, GitHub Actions CI/CD, security scanning, monitoring, and governance controls.
+## Overview
 
-The project follows enterprise DevOps practices including remote state management, infrastructure modularization, deployment approvals, security validation, environment isolation, and operational monitoring.
+The **AWS Multi-Environment Infrastructure Platform** is an enterprise-style Infrastructure as Code (IaC) project that provisions standardized AWS environments using reusable Terraform modules.
 
-## Infrastructure Status Dashboard
+The platform demonstrates modern DevOps practices including infrastructure modularization, remote state management, automated CI pipelines, infrastructure security scanning, monitoring, operational automation, governance, and environment isolation.
 
-A single-page dashboard showing dev/stage/prod side by side — CloudWatch alarm status (green/red), tagging compliance %, last deployment timestamp, and resource counts per environment. This directly visualizes the "Governance" and "Monitoring" sections of your README — the parts that are hardest to show in a static screenshot otherwise. Pulls from CloudWatch and Resource Groups Tagging API via a small Lambda + API Gateway backend.
-
----
-
-## Project Objectives
-
-This project was built to demonstrate:
-
-* Reusable Terraform module design
-* Multi-environment infrastructure management
-* Remote state storage and locking
-* Infrastructure CI/CD automation
-* Security and compliance validation
-* Monitoring and alerting implementation
-* Governance through tagging standards
-* Controlled production deployments
-* Infrastructure consistency across environments
+The objective is to create a reusable infrastructure blueprint that internal engineering teams can use to rapidly provision consistent cloud environments while following infrastructure standards and operational best practices.
 
 ---
 
-## Architecture Overview
+# Project Objectives
+
+This project demonstrates:
+
+* Enterprise Infrastructure as Code (IaC)
+* Multi-environment deployments
+* Modular Terraform architecture
+* Remote Terraform state management
+* Infrastructure CI/CD
+* Operational monitoring
+* Event-driven automation
+* Infrastructure governance
+* Standardized tagging
+* Automated operational reporting
+* Production deployment workflows
+
+---
+
+# Architecture
 
 ```text
-                        GitHub Repository
-                                │
-                                ▼
-                      GitHub Actions CI/CD
-                                │
-            ┌───────────────────┼───────────────────┐
-            │                   │                   │
-            ▼                   ▼                   ▼
-          Dev                Stage               Prod
-            │                   │                   │
-            └──────────── Terraform ───────────────┘
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        │                       │                       │
-        ▼                       ▼                       ▼
-      VPC                    EC2/IAM               Lambda
-        │                       │
-        ▼                       ▼
-   CloudWatch Alarms -------> SNS Alerts
-
-                                │
-                                ▼
-                   S3 Remote State Backend
-                                │
-                                ▼
-                     DynamoDB State Locking
+                          GitHub Repository
+                                 │
+                                 ▼
+                      GitHub Actions CI Pipeline
+                                 │
+             ┌───────────────────┼───────────────────┐
+             │                   │                   │
+             ▼                   ▼                   ▼
+           Dev                Stage               Production
+             │                   │                   │
+             └────────────── Terraform ──────────────┘
+                                 │
+     ┌──────────────┬────────────┼──────────────┬──────────────┐
+     │              │            │              │              │
+     ▼              ▼            ▼              ▼              ▼
+    VPC            EC2          IAM       CloudWatch        Lambda
+     │                                         │              │
+     │                                         ▼              ▼
+     │                                    SNS Alerts     EventBridge
+     │
+     ▼
+S3 Remote Backend + DynamoDB State Locking
 ```
 
 ---
 
-## Key Features
+# Project Architecture
 
-### Multi-Environment Deployment
+The infrastructure is divided into reusable Terraform modules.
 
-The platform supports three isolated environments:
-
-* Development (dev)
-* Staging (stage)
-* Production (prod)
-
-Each environment:
-
-* Uses independent Terraform state files
-* Has environment-specific configurations
-* Reuses the same Terraform modules
-* Can be deployed independently
+```text
+modules/
+│
+├── networking
+│      ├── VPC
+│      ├── Public Subnets
+│      ├── Internet Gateway
+│      └── Route Tables
+│
+├── compute
+│      ├── EC2
+│      ├── IAM Roles
+│      └── Security Groups
+│
+├── monitoring
+│      ├── CloudWatch
+│      ├── SNS
+│      └── CloudWatch Alarms
+│
+└── lambda
+       ├── Operations Automation
+       ├── Health Reporting
+       ├── Governance Checks
+       ├── Cost Auditing
+       └── EventBridge Integration
+```
 
 ---
 
-### Remote State Management
+# Multi-Environment Infrastructure
 
-Terraform state is stored centrally in Amazon S3.
+The platform supports three isolated environments.
 
-Benefits:
+* Development
+* Staging
+* Production
 
-* Shared team access
-* Versioned state files
+Each environment maintains:
+
+* Independent Terraform state
+* Environment-specific variables
+* Shared reusable modules
+* Consistent deployment workflow
+* Independent lifecycle management
+
+This enables the same infrastructure to be deployed consistently across multiple environments without duplicating code.
+
+---
+
+# Remote State Management
+
+Terraform state is stored remotely using:
+
+* Amazon S3
+* Amazon DynamoDB
+
+## S3
+
+Provides:
+
+* Centralized state storage
+* Version history
+* Team collaboration
 * Disaster recovery
-* State consistency
 
-Terraform locking is implemented using DynamoDB.
+## DynamoDB
 
-Benefits:
+Provides:
 
-* Prevents concurrent changes
-* Eliminates state corruption risks
-* Supports collaborative deployments
+* State locking
+* Concurrency protection
+* Safe team deployments
 
 ---
 
-### Infrastructure Modules
+# CloudFormation Bootstrap
 
-Infrastructure is organized into reusable Terraform modules.
+Before Terraform can use a remote backend, the backend itself must exist.
 
-#### Networking Module
+CloudFormation is used to bootstrap:
+
+* Terraform State Bucket
+* Terraform Lock Table
+
+This avoids the circular dependency of Terraform attempting to create the backend that it depends on.
+
+---
+
+# Infrastructure Modules
+
+## Networking
 
 Creates:
 
 * VPC
-* Public Subnets
-* Route Tables
 * Internet Gateway
+* Route Tables
+* Public Subnets
+* Route Associations
 
-#### Compute Module
+---
+
+## Compute
 
 Creates:
 
 * EC2 Instances
 * IAM Roles
+* Instance Profiles
 * Security Groups
+* User Data Scripts
 
-#### Monitoring Module
+The EC2 instance automatically installs and starts Nginx using cloud-init, providing a simple web application for infrastructure validation.
+
+---
+
+## Monitoring
 
 Creates:
 
 * CloudWatch Alarms
 * SNS Topics
-* Alert Subscriptions
+* Email Notifications
 
-#### Lambda Module 
+Current monitoring includes:
 
-I built an Operations Automation module that performs infrastructure health reporting, scheduled audits, governance validation, cost optimization checks, and event-driven operational workflows. The module is extensible through EventBridge and SNS, allowing the platform to automate routine operational tasks instead of relying on manual intervention.
+* CPU Utilization
+* EC2 Health Checks
+* Infrastructure Alerts
 
-Operations Automation Engine:
+CloudWatch alarms notify administrators through SNS whenever predefined thresholds are exceeded.
+
+---
+
+## Operations Automation
+
+The Lambda module serves as the platform's operational automation engine.
+
+Current capabilities include:
 
 * Infrastructure health reporting
+* EC2 inventory
+* Running vs stopped instance reporting
 * Event-driven automation
-* Scheduled operational tasks
-* Governance and tag compliance audits
-* Cost optimization checks
-* Security posture validation
-* Automated notifications and remediation
+* Scheduled execution through EventBridge
+* Governance validation
+* Cost optimization framework
+* Operational reporting
+
+The module is intentionally extensible, allowing additional operational tasks to be added without modifying the infrastructure modules.
 
 ---
 
-## Repository Structure
+# Event-Driven Operations
+
+Amazon EventBridge schedules operational tasks automatically.
+
+Typical workflow:
 
 ```text
-.
-├── cloudformation/
-│   └── backend-bootstrap.yaml
-│
-├── modules/
-│   ├── networking/
-│   ├── compute/
-│   ├── monitoring/
-│   └── lambda/
-│
-├── environments/
-│   ├── dev/
-│   ├── stage/
-│   └── prod/
-│
-├── .github/
-│   └── workflows/
-│       └── terraform.yml
-│
-├── scripts/
-│   ├── bootstrap.sh
-│   └── deploy.sh
-│
-└── README.md
+EventBridge
+      │
+      ▼
+AWS Lambda
+      │
+      ▼
+Infrastructure Health Report
+      │
+      ▼
+CloudWatch Logs
 ```
+
+This removes the need for manual operational checks.
 
 ---
 
-## CloudFormation Bootstrap
+# Infrastructure Governance
 
-CloudFormation is used to create Terraform backend resources before Terraform initialization.
-
-Resources created:
-
-* S3 Bucket
-* DynamoDB Table
-
-Why CloudFormation?
-
-Terraform requires a backend before state can be stored remotely. Using CloudFormation simplifies the bootstrap process and avoids backend dependency issues.
-
-Resources:
-
-```text
-TerraformStateBucket
-TerraformLockTable
-```
-
----
-
-## Terraform Backend Configuration
-
-Example backend configuration:
-
-```hcl
-terraform {
-  backend "s3" {
-    bucket         = "terraform-state-bucket"
-    key            = "dev/terraform.tfstate"
-    region         = "ap-southeast-1"
-    dynamodb_table = "terraform-lock-table"
-    encrypt        = true
-  }
-}
-```
-
-Environment-specific state files:
-
-```text
-dev/terraform.tfstate
-stage/terraform.tfstate
-prod/terraform.tfstate
-```
-
----
-
-## Infrastructure Governance
-
-A standardized tagging strategy is applied across all AWS resources.
+A standardized tagging strategy is applied across all resources.
 
 Example:
 
 ```hcl
 tags = {
-  Project     = "multi-env-platform"
-  Environment = "prod"
+  Project     = "aws-multi-env-platform"
+  Environment = "dev"
   ManagedBy   = "Terraform"
   Owner       = "DevOps"
 }
 ```
 
-Benefits:
+Benefits include:
 
-* Cost tracking
-* Resource ownership visibility
-* Governance compliance
+* Cost allocation
+* Ownership identification
 * Operational consistency
+* Governance compliance
 
 ---
 
-## Monitoring and Alerting
+# CI/CD Pipeline
 
-CloudWatch monitors infrastructure health and performance.
+Infrastructure validation is automated using GitHub Actions.
 
-Examples:
-
-* High CPU Utilization
-* Instance Status Check Failures
-* Network Errors
-
-CloudWatch Alarms trigger SNS notifications.
-
-Alert Flow:
+Pipeline:
 
 ```text
-CloudWatch Alarm
-       │
-       ▼
-   SNS Topic
-       │
-       ▼
- Email Notification
-```
-
-Operational Benefits:
-
-* Faster incident response
-* Improved system visibility
-* Proactive monitoring
-
----
-
-## Lambda Automation
-
-AWS Lambda is used for lightweight operational automation.
-
-Example Use Cases:
-
-* Log processing
-* Event handling
-* Alert remediation
-* Scheduled maintenance tasks
-
-Sample Runtime:
-
-```python
-def lambda_handler(event, context):
-    return {
-        "statusCode": 200
-    }
-```
-
----
-
-## CI/CD Pipeline
-
-Infrastructure deployments are automated using GitHub Actions.
-
-Pipeline Stages:
-
-```text
-Code Push
-    │
-    ▼
+Developer Push
+        │
+        ▼
+GitHub Actions
+        │
+        ▼
 Terraform Format Check
-    │
-    ▼
+        │
+        ▼
 Terraform Validate
-    │
-    ▼
-tfsec Scan
-    │
-    ▼
-Trivy Scan
-    │
-    ▼
+        │
+        ▼
+Trivy Infrastructure Scan
+        │
+        ▼
 Terraform Plan
-    │
-    ▼
-Manual Approval (Prod)
-    │
-    ▼
-Terraform Apply
+        │
+        ▼
+Plan Artifact
 ```
+
+The pipeline validates every infrastructure change before deployment.
 
 ---
 
-## Security Controls
+# Infrastructure Security
 
-### tfsec
-
-Static analysis for Terraform code.
+The project integrates **Trivy** into the CI pipeline to perform Infrastructure-as-Code security scanning.
 
 Checks include:
 
-* Unencrypted resources
-* Public access risks
-* Security group misconfigurations
-* IAM permission issues
-
-### Trivy
-
-Security scanning for:
-
-* Infrastructure misconfigurations
-* Dependencies
-* Container images
-* Vulnerabilities
+* Terraform misconfigurations
+* Security best-practice violations
+* Infrastructure risks
+* Configuration weaknesses
 
 Benefits:
 
 * Shift-left security
-* Early risk detection
-* Improved compliance posture
+* Automated infrastructure validation
+* Early detection of configuration issues
 
 ---
 
-## Production Deployment Approval
+# Deployment Workflow
 
-Production deployments require manual approval through GitHub Environments.
-
-Workflow:
-
-```text
-Developer Push
-      │
-      ▼
-Terraform Plan
-      │
-      ▼
-Reviewer Approval
-      │
-      ▼
-Terraform Apply
-```
-
-Benefits:
-
-* Change control
-* Reduced deployment risk
-* Improved governance
-
----
-
-## Deployment Workflow
-
-### 1. Bootstrap Backend
+## Bootstrap Backend
 
 ```bash
 aws cloudformation deploy \
@@ -403,7 +327,9 @@ aws cloudformation deploy \
   --stack-name terraform-backend
 ```
 
-### 2. Initialize Terraform
+---
+
+## Initialize Terraform
 
 ```bash
 cd environments/dev
@@ -411,115 +337,161 @@ cd environments/dev
 terraform init
 ```
 
-### 3. Validate
+---
+
+## Validate Infrastructure
 
 ```bash
+terraform fmt
+
 terraform validate
 ```
 
-### 4. Generate Plan
+---
+
+## Generate Execution Plan
 
 ```bash
-terraform plan
-```
-
-### 5. Apply Changes
-
-```bash
-terraform apply
+terraform plan -out=tfplan
 ```
 
 ---
 
-## Example AWS Resources Created
+## Apply Infrastructure
 
-### Networking
-
-* 1 VPC
-* Public Subnets
-* Internet Gateway
-* Route Tables
-
-### Compute
-
-* EC2 Instances
-* IAM Roles
-* Security Groups
-
-### Monitoring
-
-* CloudWatch Alarms
-* SNS Topics
-
-### Automation
-
-* Lambda Functions
+```bash
+terraform apply tfplan
+```
 
 ---
 
-## Tech Stack Demonstrated
+# Operational Workflow
 
-* Terraform Modules
-* Infrastructure as Code (IaC)
-* AWS Cloud Architecture
-* Remote State Management
-* S3 Backend
-* DynamoDB Locking
-* CloudFormation
-* GitHub Actions
-* CI/CD Automation
-* Security Scanning
-* CloudWatch Monitoring
-* SNS Alerting
-* IAM Governance
-* Environment Isolation
-* Infrastructure Standardization
+```text
+Developer
+     │
+     ▼
+Git Push
+     │
+     ▼
+GitHub Actions
+     │
+     ├── Terraform Format
+     ├── Terraform Validate
+     ├── Trivy Scan
+     └── Terraform Plan
+     │
+     ▼
+AWS Infrastructure
+     │
+     ├── VPC
+     ├── EC2
+     ├── CloudWatch
+     ├── SNS
+     ├── Lambda
+     └── EventBridge
+     │
+     ▼
+Scheduled Operational Reports
+```
 
 ---
 
-## Results
+# Repository Structure
 
-* Standardized infrastructure deployment across dev, stage, and prod environments.
-* Reduced configuration drift through reusable Terraform modules.
-* Improved deployment reliability with automated validation and approvals.
-* Increased operational visibility through monitoring and alerting.
-* Strengthened security posture through automated scanning and governance controls.
+```text
+.
+├── cloudformation/
+├── environments/
+│   ├── dev/
+│   ├── stage/
+│   └── prod/
+│
+├── modules/
+│   ├── networking/
+│   ├── compute/
+│   ├── monitoring/
+│   └── lambda/
+│
+├── scripts/
+│
+├── .github/
+│   └── workflows/
+│       └── terraform.yml
+│
+└── README.md
+```
 
 ---
 
-## Technology Stack
+# Technologies
 
 * Terraform
 * AWS CloudFormation
-* Amazon EC2
 * Amazon VPC
+* Amazon EC2
 * Amazon IAM
 * Amazon S3
 * Amazon DynamoDB
-* Amazon Lambda
 * Amazon CloudWatch
 * Amazon SNS
+* Amazon EventBridge
+* AWS Lambda
 * GitHub Actions
-* tfsec
 * Trivy
 * Python
 * Bash
 
 ---
 
-## Future Enhancements
+# Key Outcomes
 
-* Auto Scaling Groups
-* Application Load Balancer
-* ECS Fargate
-* EKS Integration
-* AWS Config Compliance Rules
-* AWS Systems Manager
-* Cost Optimization Dashboards
-* Infrastructure Testing with Terratest
-* Multi-Account AWS Architecture
+* Standardized infrastructure deployments
+* Modular Terraform architecture
+* Automated CI pipeline
+* Secure remote Terraform state
+* Infrastructure monitoring
+* Event-driven operational automation
+* Reusable enterprise infrastructure blueprint
+* Governance through standardized tagging
+* Automated infrastructure validation
 
 ---
 
-## License
-MIT
+# Challenges Solved
+
+During development, several real-world engineering challenges were encountered and resolved:
+
+* Migrated Terraform backend after moving to a new AWS account.
+* Reconfigured remote state using Amazon S3 and DynamoDB.
+* Debugged EC2 user data to automate Nginx installation.
+* Validated CloudWatch alarms through CPU stress testing.
+* Resolved Lambda deployment failure caused by the reserved `AWS_REGION` environment variable.
+* Built an automated GitHub Actions pipeline with infrastructure validation and security scanning.
+
+These challenges mirror common operational scenarios encountered while managing production cloud infrastructure.
+
+---
+
+# Future Enhancements
+
+* Private Subnets
+* NAT Gateway
+* Application Load Balancer
+* Auto Scaling Groups
+* ECS/Fargate Deployment
+* Amazon EKS
+* AWS Config Rules
+* AWS Systems Manager
+* AWS Organizations
+* Multi-Account Architecture
+* Infrastructure Testing with Terratest
+* Cost Optimization Dashboard
+* OIDC Authentication for GitHub Actions
+* Production Deployment Approval Gates
+
+---
+
+# License
+
+MIT License
