@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Terraform Backend Resources
+Description: Terraform Backend Resources for Strenure Internal Team 
 
 Resources:
 
   TerraformStateBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: techwithher-project-2-statelock
+      BucketName: strenure-terraform-state-bucket
 
       VersioningConfiguration:
         Status: Enabled
@@ -19,7 +19,7 @@ Resources:
   TerraformLockTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: techwithher-project-2-locktable
+      TableName: strenure-terraform-locktable
 
       BillingMode: PAY_PER_REQUEST
 
