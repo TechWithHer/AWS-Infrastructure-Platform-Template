@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= v1.16.1"
 
   required_providers {
     aws = {
@@ -9,10 +9,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "techwithher-project-2-statelock"
+    bucket         = "strenure-terraform-state-bucket"
     key            = "dev/terraform.tfstate"
     region         = "ap-southeast-1"
-    dynamodb_table = "techwithher-project-2-locktable"
+    dynamodb_table = "strenure-terraform-locktable"
     encrypt        = true
   }
 }
