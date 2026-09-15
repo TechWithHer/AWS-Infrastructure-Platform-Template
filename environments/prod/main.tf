@@ -1,20 +1,22 @@
 terraform {
-  required_version = ">= 1.5.0" #Which version of Terraform is required to run this configuration.
+  required_version = ">= v1.16.1"
 
   required_providers {
-    docker = {
-      source  = "kreuzwerker/docker" #Which provider to use for Docker resources.
-      version = "~> 3.0"
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
   }
 
-  backend "local" {
-    path = "terraform.tfstate" 
-    #Backend to store the Terraform state file locally. 
-    #Note: The local backend stores the state file on the machine where Terraform is executed. 
-    # In a real team setup, you might want to use a remote backend like Terraform Cloud, S3, GCS, or Azure.
+  backend "s3" {
+    bucket         = "strenure-terraform-state-bucket"
+    key            = "prod/terraform.tfstate"
+    region         = "ap-southeast-1"
+    dynamodb_table = "strenure-terraform-locktable"
+    encrypt        = true
   }
 }
+
 
 provider "docker" {}
 

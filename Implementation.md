@@ -1,24 +1,71 @@
-Project Overview
-Business Problem
-Solution Architecture
-Project Objectives
-Architecture Diagram
-Repository Structure
-Technology Stack
-Infrastructure Components
-Backend Bootstrap
-Networking
-Compute
-Monitoring
-Operations Automation (Lambda)
-CI/CD Pipeline
-Security & Governance
-Deployment Workflow
-Testing & Validation
-Screenshots
-Key Learnings
-Future Enhancements
-License
+# Project Implementation and Modification Document
+
+## Step 1: Creation of Backend. 
+
+Created Cloudformation stack for backend and state locking. This stack included S3 Bucket + DynamoDB (for statelocking). 
+For each environment there were separate bucket keys: 
+- dev/terraform.tfstate
+- stage/terraform.tfstate
+- prod/terraform.tfstate 
+
+#### Updated: Dynamo DB depreciated and replaced by S3 native locking
+
+This is for storing the tfstate files of different environments along with S3-native locking in S3 bucket. 
+
+There will be only 1 S3 Bucket created with 3 keys for different environments as mentioned above.
+
+### Important Learning: 
+
+In the backend folder , the resource I am creating is simply S3 bucket with standard s3 attributes like: versioning + encryption + public-access blocking + TLS-only acces etc. When this same backend is called in the backend block of the terraform block in different environments, we can use use-lock.
+
+### Architechture
+
+````text
+
+              backend/
+                 │
+                 ▼
+       ┌───────────────────┐
+       │ S3 Bucket          │
+       │ Encryption         │
+       │ Versioning         │
+       │ Public access off  │
+       │ TLS enforcement    │
+       └─────────┬─────────┘
+                 │
+        Terraform backend
+                 │
+       ┌─────────┼─────────┐
+       ▼         ▼         ▼
+      Dev      Stage      Prod
+       │         │         │
+    state       state      state
+    + lock      + lock     + lock
+
+````
+
+#### Bucket Security Setup
+
+````text
+
+                    S3 Bucket
+                       │
+        ┌──────────────┼──────────────┐
+        ↓              ↓              ↓
+    Versioning     Encryption    Public Access
+        │              │              │
+        └──────────────┼──────────────┘
+                       ↓
+                 Bucket Policy
+                       │
+                  HTTPS only
+                       │
+                       ▼
+             Terraform State
+
+````
+
+------------------------------------------------------------------
 
 
                   Developer
