@@ -1,0 +1,4 @@
+# Copy this template and reuse it as tfvars after replacing the values.
+
+project_name = "my-project-infra-state"
+aws_region   = "ap-southeast-1"

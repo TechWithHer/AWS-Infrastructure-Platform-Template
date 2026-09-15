@@ -1,6 +1,24 @@
 # Project Implementation and Modification Document
 
-## Step 1: Creation of Backend. 
+## About the Project:
+
+````text
+
+New project starts
+       ↓
+Engineer clones template
+       ↓
+Engineer provides project name
+       ↓
+Terraform creates project-specific infrastructure
+       ↓
+Same template can be reused for Project A, B, C, D...
+
+````
+
+- project_name should be a user input, not something hardcoded in the Terraform code.
+
+## Step 1: Creation of Backend
 
 Created Cloudformation stack for backend and state locking. This stack included S3 Bucket + DynamoDB (for statelocking). 
 For each environment there were separate bucket keys: 
@@ -66,6 +84,32 @@ In the backend folder , the resource I am creating is simply S3 bucket with stan
 ````
 
 ------------------------------------------------------------------
+## Step 2: Making the Project - Template Specific. 
+
+The main intention in this project is - resuablility. 
+
+The user need to input the project name and then this project name propogates accross 2 different terraform folders.
+
+We have added a file terraform.tfvars.example for reference. 
+
+While using this project simply cp the code and update the project name and other information accordingly. 
+
+````code
+cp terraform.tfvars.example terraform.tfvars
+````
+
+Simply putting: 
+````
+Clone → configure project name → initialize → deploy.
+````
+Note: This step enhances the reusability of the project. The .example file is documentation + a starting point. The real .tfvars file is the project's actual input.
+
+#### Not pushing the .tfvars to GitHub.
+
+For project_name, there is nothing sensitive about the value itself. But keeping terraform.tfvars ignored is still a common and useful convention because later we may put things like account-specific IDs, credentials-related values, or other environment-specific configuration there.
+
+------------------------------------------------------------------
+## Step 3: Created an Output.tf to display the list of resources created 
 
 
                   Developer

@@ -1,7 +1,16 @@
 variable "project_name" {
-  default = "Strenure-Org-Infrastructure-Template"
+description = "Input the Unique Name of the Project"
+  type        = string
+
+  validation {
+    condition     = length(var.project_name) > 0
+    error_message = "Project name cannot be empty."
+  }
 }
 
+
 variable "aws_region" {
-  default = "ap-southeast-1"
+  description = "Select the valid AWS region"
+  type        = string
+  default     = "ap-southeast-1"
 }

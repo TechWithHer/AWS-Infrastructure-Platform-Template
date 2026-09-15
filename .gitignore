@@ -4,6 +4,7 @@
 
 # Terraform working directory
 **/.terraform/
+   
 
 # Terraform state files
 *.tfstate
@@ -16,6 +17,7 @@ crash.*.log
 # Terraform plan files
 *.tfplan
 *.plan
+*.tfvars
 
 
 # Terraform override files
