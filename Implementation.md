@@ -108,8 +108,107 @@ Note: This step enhances the reusability of the project. The .example file is do
 
 For project_name, there is nothing sensitive about the value itself. But keeping terraform.tfvars ignored is still a common and useful convention because later we may put things like account-specific IDs, credentials-related values, or other environment-specific configuration there.
 
+#### Created an Output.tf to display the list of resources created 
 ------------------------------------------------------------------
-## Step 3: Created an Output.tf to display the list of resources created 
+## Step 3: The Initialization Mechanism
+
+Created setup.sh at the repository root.So the user enters the project name once.setup.sh automatically generates the three backend files
+
+It takes the bucket name returned by Terraform and creates:
+
+environments/dev/terraform_s3_backend.hcl
+environments/stage/terraform_s3_backend.hcl
+environments/prod/terraform_s3_backend.hcl
+
+with the appropriate environment-specific key.
+
+
+````
+terraform_s3_backend/
+     │
+     │ creates
+     ▼
+ayu-sonal-bucket
+     │
+     │ value must be passed to Dev
+     ▼
+environments/dev/
+     │
+     └── terraform_s3_backend.hcl
+             bucket = "ayu-sonal-bucket"
+             key    = "dev/terraform.tfstate"
+
+````
+````
+                    USER
+                      │
+             enters project name
+                      │
+                      ▼
+             terraform_s3_backend
+                      │
+                creates bucket
+                      │
+                      ▼
+              bucket name known
+                      │
+                      ▼
+        generate/update backend config
+                      │
+          ┌───────────┼───────────┐
+          ▼           ▼           ▼
+        dev.hcl    stage.hcl    prod.hcl
+          │           │           │
+          ▼           ▼           ▼
+      terraform init for each environment
+
+````
+
+bootstrap script/mechanism is what connects Part 1 and Part 2.
+
+````
+./setup.sh
+   ↓
+"Enter project name:"
+   ↓
+ayu-sonal-bucket
+   ↓
+terraform_s3_backend
+   ↓
+S3 bucket created
+   ↓
+generate backend configs
+   ↓
+dev/terraform_s3_backend.hcl
+stage/terraform_s3_backend.hcl
+prod/terraform_s3_backend.hcl
+
+````
+
+## Step 4: Created a persistent bootstrap S3 bucket manually
+
+strenure-infra-template-s3-backend-statefile-bucket
+
+It is a persistent platform resource whose lifecycle is managed separately from the project Terraform configuration.
+Its job is to store the Terraform state of the terraform_s3_backend project itself.
+
+````
+Persistent bootstrap bucket
+strenure-infra-template-s3-backend-statefile-bucket
+        │
+        └── terraform_s3_backend/terraform.tfstate
+
+
+Project state bucket
+<project-name>
+        │
+        ├── dev/terraform.tfstate
+        ├── stage/terraform.tfstate
+        └── prod/terraform.tfstate
+
+````
+
+------------------------------------------------------------------
 
 
                   Developer

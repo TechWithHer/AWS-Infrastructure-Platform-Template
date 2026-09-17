@@ -1,37 +1,26 @@
 terraform {
-  required_version = ">= v1.16.1"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
 
   backend "s3" {
-    bucket         = "strenure-terraform-state-bucket"
-    key            = "dev/terraform.tfstate"
-    region         = "ap-southeast-1"
-    dynamodb_table = "strenure-terraform-locktable"
-    encrypt        = true
+    use_lockfile = true
   }
 }
 
-provider "aws" {
-  region = "ap-southeast-1"
-}
 
-#--------------------- MODULE 1: Compute
+# provider "aws" {
+#   region = "ap-southeast-1"
+# }
 
-module "compute" {
+# #--------------------- MODULE 1: Compute
 
-  source = "../../modules/compute"
-  project_name = "Strenure-Org-Infrastructure-Template"
-  environment = "dev"
-  #vpc_id = module.networking.vpc_id
-  #subnet_id     = module.networking.public_subnet_ids[0]
-  instance_type = "t3.micro"
-}
+# module "compute" {
+
+#   source = "../../modules/compute"
+#   project_name = "Strenure-Org-Infrastructure-Template"
+#   environment = "dev"
+#   #vpc_id = module.networking.vpc_id
+#   #subnet_id     = module.networking.public_subnet_ids[0]
+#   instance_type = "t3.micro"
+# }
 #---------------------
 
 # module "networking" {
