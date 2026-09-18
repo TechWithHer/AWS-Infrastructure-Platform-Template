@@ -1,15 +1,17 @@
-# AWS Multi-Environment Infrastructure Platform
-
+# Reusable Terraform-based AWS Infrastructure Provisioning Framework
 ![Terraform](https://img.shields.io/badge/Terraform-v1.5+-623CE4?style=for-the-badge\&logo=terraform\&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-Cloud-orange?style=for-the-badge\&logo=amazonaws\&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-2088FF?style=for-the-badge\&logo=githubactions\&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-Automation-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
 
+
 ## Overview
 
-The **AWS Multi-Environment Infrastructure Platform** is an enterprise-style Infrastructure as Code (IaC) project that provisions standardized AWS environments using reusable Terraform modules.
+The **Reusable Terraform-based AWS Infrastructure Provisioning Framework** is an enterprise-style Infrastructure as Code (IaC) project that provisions standardized AWS environments using reusable Terraform modules: networking, compute, monitoring, and Lambda components. 
 
-The platform demonstrates modern DevOps practices including infrastructure modularization, remote state management, automated CI pipelines, infrastructure security scanning, monitoring, operational automation, governance, and environment isolation.
+It has environment isolation, centralized S3 remote state with locking and versioning, and automated project bootstrap/cleanup workflows.
+
+The platform demonstrates modern DevOps practices including infrastructure modularization, remote state management, automated CI pipelines, infrastructure security scanning, monitoring, operational automation, access management, governance, and environment isolation.
 
 The objective is to create a reusable infrastructure blueprint that internal engineering teams can use to rapidly provision consistent cloud environments while following infrastructure standards and operational best practices.
 

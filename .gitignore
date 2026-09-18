@@ -18,6 +18,7 @@ crash.*.log
 *.tfplan
 *.plan
 *.tfvars
+*.txt.example
 
 
 # Terraform override files

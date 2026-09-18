@@ -1,25 +1,52 @@
 # Project Implementation and Modification Document
 
-## About the Project:
+## Why I created this project?
+
+I identified a repeatable infrastructure-provisioning problem and designed a reusable Terraform framework to standardize provisioning, state management, environment separation, security controls and operational workflows.
+
+## About the Project: 
+
+Designed and implemented a reusable Terraform-based AWS infrastructure framework with modular networking, compute, monitoring, and Lambda components, environment isolation, centralized S3 remote state with locking and versioning, and automated project bootstrap/cleanup workflows.
+
+The objective is to create a reusable infrastructure blueprint that internal engineering teams can use to rapidly provision consistent cloud environments while following infrastructure standards and operational best practices.
+
+
+#### Common Issues Resolved:
+
+- *Inconsistent resource naming*
+Standardized AWS resource naming using project and environment conventions.
+
+- *Poor infrastructure state management*
+Centralized Terraform state in Amazon S3 with state locking and versioning to improve consistency, traceability, and recovery.
+
+- *Manual provisioning and configuration errors*
+Automated infrastructure provisioning through reusable Terraform modules and bootstrap scripts, reducing repetitive manual work and configuration drift.
+
+- *Uncontrolled infrastructure access*
+Designed the platform to use IAM-based access controls so only authorized users can provision, modify, or access infrastructure and Terraform state.
+
+- S3 backend security controls implemented, with IAM-based access control planned for authorized infrastructure operations and state access.
+
+### Project Flow 
 
 ````text
 
 New project starts
        ↓
-Engineer clones template
+User clones template
        ↓
-Engineer provides project name
+User RUNS setup.sh
+       ↓
+User provides project name
        ↓
 Terraform creates project-specific infrastructure
        ↓
 Same template can be reused for Project A, B, C, D...
 
 ````
-
-- project_name should be a user input, not something hardcoded in the Terraform code.
-
 ## Step 1: Creation of Backend
 
+(Old Version : 25.05.2025) 
 Created Cloudformation stack for backend and state locking. This stack included S3 Bucket + DynamoDB (for statelocking). 
 For each environment there were separate bucket keys: 
 - dev/terraform.tfstate
@@ -28,13 +55,19 @@ For each environment there were separate bucket keys:
 
 #### Updated: Dynamo DB depreciated and replaced by S3 native locking
 
-This is for storing the tfstate files of different environments along with S3-native locking in S3 bucket. 
+(New Version : 29.08.2025) 
+S3 bucket was used for is for storing the tfstate files of different environments along with S3-native locking(Replaced by Dynamo DB). 
 
-There will be only 1 S3 Bucket created with 3 keys for different environments as mentioned above.
+Only one S3 Bucket created with 3 keys for different environments as mentioned above.
 
 ### Important Learning: 
 
-In the backend folder , the resource I am creating is simply S3 bucket with standard s3 attributes like: versioning + encryption + public-access blocking + TLS-only acces etc. When this same backend is called in the backend block of the terraform block in different environments, we can use use-lock.
+We cannot use the S3-native locking while creating the S3 bucket. We can add standard s3 attributes like: versioning + encryption + public-access blocking + TLS-only acces etc. 
+
+**S3-native locking is a Terraform backend feature. It is enabled when Terraform stores state in an existing S3 bucket; it is not an attribute used while creating the S3 bucket itself.**
+
+So: 
+use_lockfile = true belongs to the Terraform S3 backend configuration, not the aws_s3_bucket resource.
 
 ### Architechture
 
@@ -82,7 +115,6 @@ In the backend folder , the resource I am creating is simply S3 bucket with stan
              Terraform State
 
 ````
-
 ------------------------------------------------------------------
 ## Step 2: Making the Project - Template Specific. 
 
@@ -844,4 +876,3 @@ After implementing these components, your CV statement becomes fully defensible:
 ✅ Production Approval Gates
 ✅ Tagging Strategy
 
-This is the kind of project a DevOps interviewer would recognize as resembling a real enterprise Terraform platform rather than a learning/demo project.
