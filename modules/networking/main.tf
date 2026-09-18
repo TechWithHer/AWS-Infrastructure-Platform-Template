@@ -1,104 +1,124 @@
-locals {
-  common_tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-  }
-}
+
+
+# VPC
+# ├── 2 Public Subnets
+# ├── 2 Private Subnets
+# ├── Internet Gateway
+# ├── Public Route Table
+# ├── Private Route Table
+# ├── Public route associations
+# └── Private route association
+
 
 resource "aws_vpc" "this" {
-
+  name = "${var.project_name}-${var.environment}-vpc"
   cidr_block = var.vpc_cidr
-
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-
-  tags = merge(local.common_tags, {
-  Name = "${var.project_name}-${var.environment}-vpc"
-})
-}
-# Create public subnet 1
-
-resource "aws_subnet" "public_1" {
-
-  vpc_id = aws_vpc.this.id
-
-  cidr_block = var.public_subnet_1_cidr
-
-  availability_zone = var.availability_zone_1
-
-  map_public_ip_on_launch = true
-
-  tags = merge(local.common_tags, {
-  Name = "${var.project_name}-${var.environment}-vpc"
-})
+  ipv6_cidr_block = var.vpc_ipv6_cidr
 }
 
-# Create public subnet 2
 
-resource "aws_subnet" "public_2" {
 
-  vpc_id = aws_vpc.this.id
+# locals {
+#   common_tags = {
+#     Project     = var.project_name
+#     Environment = var.environment
+#     ManagedBy   = "Terraform"
+#   }
+# }
 
-  cidr_block = var.public_subnet_2_cidr
+# resource "aws_vpc" "this" {
 
-  availability_zone = var.availability_zone_2
+#   cidr_block = var.vpc_cidr
 
-  map_public_ip_on_launch = true
+#   enable_dns_hostnames = true
+#   enable_dns_support   = true
 
-  tags = merge(local.common_tags, {
-  Name = "${var.project_name}-${var.environment}-vpc"
-})
-}
+#   tags = merge(local.common_tags, {
+#   Name = "${var.project_name}-${var.environment}-vpc"
+# })
+# }
+# # Create public subnet 1
 
-# Create an Internet Gateway
+# resource "aws_subnet" "public_1" {
 
-resource "aws_internet_gateway" "this" {
+#   vpc_id = aws_vpc.this.id
 
-  vpc_id = aws_vpc.this.id
+#   cidr_block = var.public_subnet_1_cidr
 
-  tags = merge(local.common_tags, {
-  Name = "${var.project_name}-${var.environment}-vpc"
-})
-}
+#   availability_zone = var.availability_zone_1
 
-# Create a public route table
+#   map_public_ip_on_launch = true
 
-resource "aws_route_table" "public" {
+#   tags = merge(local.common_tags, {
+#   Name = "${var.project_name}-${var.environment}-vpc"
+# })
+# }
 
-  vpc_id = aws_vpc.this.id
+# # Create public subnet 2
 
-  tags = merge(local.common_tags, {
-  Name = "${var.project_name}-${var.environment}-vpc"
-})
-}
+# resource "aws_subnet" "public_2" {
 
-# Add Internet Route
+#   vpc_id = aws_vpc.this.id
 
-resource "aws_route" "internet" {
+#   cidr_block = var.public_subnet_2_cidr
 
-  route_table_id = aws_route_table.public.id
+#   availability_zone = var.availability_zone_2
 
-  destination_cidr_block = "0.0.0.0/0"
+#   map_public_ip_on_launch = true
 
-  gateway_id = aws_internet_gateway.this.id
-}
+#   tags = merge(local.common_tags, {
+#   Name = "${var.project_name}-${var.environment}-vpc"
+# })
+# }
 
-# Associate the Rouute Table for Subnet 1
+# # Create an Internet Gateway
 
-resource "aws_route_table_association" "public_1" {
+# resource "aws_internet_gateway" "this" {
 
-  subnet_id = aws_subnet.public_1.id
+#   vpc_id = aws_vpc.this.id
 
-  route_table_id = aws_route_table.public.id
-}
+#   tags = merge(local.common_tags, {
+#   Name = "${var.project_name}-${var.environment}-vpc"
+# })
+# }
 
-# Associate the Route Table for Subnet 2
+# # Create a public route table
 
-resource "aws_route_table_association" "public_2" {
+# resource "aws_route_table" "public" {
 
-  subnet_id = aws_subnet.public_2.id
+#   vpc_id = aws_vpc.this.id
 
-  route_table_id = aws_route_table.public.id
-}
+#   tags = merge(local.common_tags, {
+#   Name = "${var.project_name}-${var.environment}-vpc"
+# })
+# }
+
+# # Add Internet Route
+
+# resource "aws_route" "internet" {
+
+#   route_table_id = aws_route_table.public.id
+
+#   destination_cidr_block = "0.0.0.0/0"
+
+#   gateway_id = aws_internet_gateway.this.id
+# }
+
+# # Associate the Rouute Table for Subnet 1
+
+# resource "aws_route_table_association" "public_1" {
+
+#   subnet_id = aws_subnet.public_1.id
+
+#   route_table_id = aws_route_table.public.id
+# }
+
+# # Associate the Route Table for Subnet 2
+
+# resource "aws_route_table_association" "public_2" {
+
+#   subnet_id = aws_subnet.public_2.id
+
+#   route_table_id = aws_route_table.public.id
+# }
 

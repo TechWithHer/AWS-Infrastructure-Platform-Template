@@ -8,7 +8,6 @@ terraform {
 
     backend "s3" {
         bucket         = "strenure-infra-template-s3-backend-statefile-bucket"
-        key            = "terraform_s3_backend/terraform.tfstate"
         region         = "ap-southeast-1"
         use_lockfile    = true
         }

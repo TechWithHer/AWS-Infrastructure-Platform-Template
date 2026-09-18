@@ -209,8 +209,32 @@ Project state bucket
 ````
 
 ------------------------------------------------------------------
+## Step 5: multi-project state isolation
 
 
+-------------------------------------------------------------------
+## Setup 6: Setting up and testing Dev
+
+
+
+✅ Dev backend is initialized successfully.
+✅ Dev state is being handled by the S3 backend.
+✅ Terraform can read the Dev state.
+-------------------------------------------------------------------
+## Step 7 setting up modules 
+
+
+## Step 7a: VPC Setup
+
+VPC
+├── 2 Public Subnets
+├── 2 Private Subnets
+├── Internet Gateway
+├── Public Route Table
+├── Private Route Table
+├── Public route associations
+└── Private route associations
+-------------------------------------------------------------------
                   Developer
                       │
                       ▼
