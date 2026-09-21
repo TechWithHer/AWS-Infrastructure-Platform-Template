@@ -35,9 +35,9 @@ New project starts
        ↓
 User clones template
        ↓
-User RUNS setup.sh
+User RUNS -> bash setup.sh
        ↓
-User provides project name
+User provides project name, eg : my-project-123
        ↓
 Terraform creates project-specific infrastructure
        ↓
@@ -67,12 +67,16 @@ We cannot use the S3-native locking while creating the S3 bucket. We can add sta
 **S3-native locking is a Terraform backend feature. It is enabled when Terraform stores state in an existing S3 bucket; it is not an attribute used while creating the S3 bucket itself.**
 
 So: 
-use_lockfile = true belongs to the Terraform S3 backend configuration, not the aws_s3_bucket resource.
+- use_lockfile = true 
+belongs to the Terraform S3 backend configuration, not the aws_s3_bucket resource.
 
 ### Architechture
 
 ````text
-
+         backup of the backend, 
+          created manually on aws console
+                 │
+                 ▼
               backend/
                  │
                  ▼
@@ -266,6 +270,8 @@ VPC
 ├── Private Route Table
 ├── Public route associations
 └── Private route associations
+
+
 -------------------------------------------------------------------
                   Developer
                       │
